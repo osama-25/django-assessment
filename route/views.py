@@ -18,8 +18,11 @@ def route_optimize(request):
     headers = {
         'Accept': 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8',
     }
-    starting_point = (-74.005974, 40.712776)  # Example: New York
-    end_point = '-87.629799, 41.878113'  # Example: Chicago
+    
+    starting_point = float(request.GET.get('start_lat', -74.005974))  # Default: New York
+    starting_point = float(request.GET.get('start_lon', 40.712776))  # Default: New York
+    end_point = float(request.GET.get('end_lat', -87.629799))  # Default: Chicago
+    end_point = float(request.GET.get('end_lon', 41.878113))  # Default: Chicago
 
     call = requests.get(f'https://api.openrouteservice.org/v2/directions/driving-car?api_key={ORS_API_KEY}&start={starting_point[0]},{starting_point[1]}&end={end_point}', headers=headers)
     data = call.json()
@@ -166,6 +169,6 @@ def generate_map(route_coords, request):
     # Return the URL to access the map
     map_url = request.build_absolute_uri(f"/static/{map_filename}")
 
-    return my_map
+    return map_url
 
 
