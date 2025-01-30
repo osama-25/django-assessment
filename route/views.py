@@ -7,10 +7,11 @@ from route.models import FuelStop
 from utils.state_abbreviations import STATE_ABBREVIATIONS
 import pandas as pd
 import folium
+import os
 from django.conf import settings
 
 # Initialize OpenRouteService client
-ORS_API_KEY = "5b3ce3597851110001cf624858de3b9e5b4e4608917551d62a90382e"
+ORS_API_KEY = os.getenv('ORS_API_KEY')
 MAX_RANGE_MILES = 440
 MPG = 10  # Miles per gallon
 
@@ -18,6 +19,7 @@ def route_optimize(request):
     headers = {
         'Accept': 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8',
     }
+    print(ORS_API_KEY)
     
     starting_point_lat = float(request.GET.get('start_lat', -74.005974))  # Default: New York
     starting_point_lon = float(request.GET.get('start_lon', 40.712776))  # Default: New York
