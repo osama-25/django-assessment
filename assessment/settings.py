@@ -25,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-*$y^&^_!6&)gtm-vm7x)5)op9lrh(z!sg*_pp*@cwep1yj2jo*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ["django-assessment.onrender.com"]
+ALLOWED_HOSTS = ["django-assessment.onrender.com", "localhost", "127.0.0.1"]
 
 load_dotenv()
 ORS_API_KEY = os.getenv('ORS_API_KEY')

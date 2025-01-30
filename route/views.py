@@ -77,7 +77,7 @@ def route_optimize(request):
         # Otherwise, continue searching for another fuel stop
         current_index = route_coords.index(list(reversed(mile_500_coord)))  # Update search index
 
-    map = generate_map(route_coords, request)
+    map = generate_map(route_coords)
     
     return JsonResponse({
         "fuel_stops": fuel_stops_list,
@@ -148,14 +148,14 @@ def get_lat_lon(address):
         return (location.latitude, location.longitude)
     return None
 
-def generate_map(route_coords, request):
-    """Generate a Folium map with the route."""
-    
+def generate_map(route_coords):
+    """Generate a Folium map and return its HTML content."""
+
     start_coord = tuple(reversed(route_coords[0]))  # Convert (lng, lat) → (lat, lng)
     end_coord = tuple(reversed(route_coords[-1]))
 
     my_map = folium.Map(location=start_coord, zoom_start=6)
-    
+
     # Add route polyline
     folium.PolyLine([tuple(reversed(coord)) for coord in route_coords], color="blue", weight=4).add_to(my_map)
 
@@ -163,14 +163,7 @@ def generate_map(route_coords, request):
     folium.Marker(start_coord, popup="Start Point", icon=folium.Icon(color="green")).add_to(my_map)
     folium.Marker(end_coord, popup="End Point", icon=folium.Icon(color="blue")).add_to(my_map)
 
-    # Save map to static directory
-    map_filename = "route_map.html"
-    map_path = f"{settings.BASE_DIR}/static/{map_filename}"
-    my_map.save(map_path)
+    # Get the HTML content of the map
+    map_html = my_map._repr_html_()
 
-    # Return the URL to access the map
-    map_url = request.build_absolute_uri(f"/static/{map_filename}")
-
-    return map_url
-
-
+    return map_html
