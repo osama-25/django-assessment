@@ -19,23 +19,23 @@ def route_optimize(request):
         'Accept': 'application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8',
     }
     
-    starting_point = float(request.GET.get('start_lat', -74.005974))  # Default: New York
-    starting_point = float(request.GET.get('start_lon', 40.712776))  # Default: New York
-    end_point = float(request.GET.get('end_lat', -87.629799))  # Default: Chicago
-    end_point = float(request.GET.get('end_lon', 41.878113))  # Default: Chicago
+    starting_point_lat = float(request.GET.get('start_lat', -74.005974))  # Default: New York
+    starting_point_lon = float(request.GET.get('start_lon', 40.712776))  # Default: New York
+    end_point_lat = float(request.GET.get('end_lat', -87.629799))  # Default: Chicago
+    end_point_lon = float(request.GET.get('end_lon', 41.878113))  # Default: Chicago
 
-    call = requests.get(f'https://api.openrouteservice.org/v2/directions/driving-car?api_key={ORS_API_KEY}&start={starting_point[0]},{starting_point[1]}&end={end_point}', headers=headers)
+    call = requests.get(f'https://api.openrouteservice.org/v2/directions/driving-car?api_key={ORS_API_KEY}&start={starting_point_lat},{starting_point_lon}&end={end_point_lat},{end_point_lon}', headers=headers)
     data = call.json()
 
     # Extract route coordinates
     route_coords = data['features'][0]['geometry']['coordinates']  # [[lon, lat], [lon, lat], ...]
     
-    start_state = get_state(starting_point[1], starting_point[0])
+    start_state = get_state(starting_point_lon, starting_point_lat)
     initial_fuel_stop = get_cheapest_fuel_stop_by_state(retrieve_fuel_stops_by_state(start_state))
     
     fuel_stops_list = [initial_fuel_stop.iloc[0].to_dict()] if not initial_fuel_stop.empty else []
     current_index = 0
-    current_stop = starting_point
+    current_stop = (starting_point_lon, starting_point_lat)
     total_cost = 0
     if geodesic(current_stop, tuple(reversed(route_coords[-1]))).miles >= MAX_RANGE_MILES:
         total_cost += (MAX_RANGE_MILES / MPG) * float(initial_fuel_stop.iloc[0]['retail_price'])
